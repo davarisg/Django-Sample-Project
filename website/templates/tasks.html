@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}All Tasks{% endblock %}
+
+{% block content %}
+    <h2>List of all tasks</h2>
+    <div style="margin: 10px">
+        <a class="btn btn-info" href="{% url "task_add" %}">Add</a>
+        {% if request.GET.hide_completed %}
+            <a class="btn btn-default" href="{% url "all_tasks" %}">Show Completed Tasks</a>
+        {% else %}
+            <a class="btn btn-default" href="{% url "all_tasks" %}?hide_completed=1">Hide Completed Tasks</a>
+        {% endif %}
+    </div>
+
+    <div style="margin: 10px" class="table-responsive">
+        {% if tasks %}
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th class="text-center">Name</th>
+                        <th class="text-center">Assignee</th>
+                        <th class="text-center">Created By</th>
+                        <th class="text-center">Completed</th>
+                        <th class="text-center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                        {% if task.completed %}
+                            <tr class="success" completed-task>
+                        {% else %}
+                            <tr>
+                        {% endif %}
+                            <td class="text-center">{{ task.name }}</td>
+                            <td class="text-center">{{ task.assignee.username }}</td>
+                            <td class="text-center">{{ task.created_by.username }}</td>
+                            <td class="text-center">{{ task.completed }}</td>
+                            <td class="text-center">
+                                {% if not task.completed %}
+                                    <a class="btn btn-success" href="{% url "task_mark_done" task.id %}">Mark Done</a>
+                                {% endif %}
+                                <a class="btn btn-default" href="{% url "task_edit" task.id %}">Edit</a>
+                                {% if not task.deleted %}
+                                    <a class="btn btn-danger" href="{% url "task_delete" task.id %}">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>There are no tasks in the system :(. Try adding one!</p>
+        {% endif %}
+    </div>
+{% endblock %}
